@@ -1,4 +1,4 @@
-# budget-checker
+# Google Ads display campaign budget checker
 Google Ads script to check budgets and pause campaigns (it works for display campaigns)
 
 Goal of this Google Ads script is to pause display campaign or send notification if campaigns spend more than can daily to the end of campaign.
