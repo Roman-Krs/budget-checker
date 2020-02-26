@@ -1,5 +1,6 @@
 //Url config spreadsheet-------------------------------------------------------------------------------------------------------------
 //***********************************************************************************************************************************
+// Warning: Check your timezone
 // Create copy of spreadsheet and insert URL to ss_config: https://docs.google.com/spreadsheets/d/1eFJHA8i9OC0oemhyy4NakTHlD8MK-p2McaZb0n8rOJw/edit?usp=sharing 
 var ss_config = SpreadsheetApp.openByUrl('YOUR SPREADSHEET URL HERE');
 /************************************************************************************************************************************
