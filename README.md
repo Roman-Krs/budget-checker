@@ -10,10 +10,7 @@ It calculate how much you can spend daily to the end of campaign. Then it check 
 It is easy to implement. 
 
 1) You just put the script on your MCC account and enable hourly run.
-2) you can just fill the columns in spreadsheet
-ad1) You can copy right formatted column in range G2:M2 to your row
-ad2) Set your own conditions
-
+2) you can just fill the columns in spreadsheet (you can copy right formatted column in range G2:M2 to your row and set your own conditions)
 3) set label written in spreadsheet on that campaign.
 4) set column ENABLED on TRUE or you can disable action of script by setting column ENABLED in that row to FALSE
 
