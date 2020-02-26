@@ -11,7 +11,7 @@ It is easy to implement.
 
 1) Put the script on your MCC account and enable an hourly run.
 2) Create a copy of the spreadsheet and insert URL to script: https://docs.google.com/spreadsheets/d/1eFJHA8i9OC0oemhyy4NakTHlD8MK-p2McaZb0n8rOJw/edit?usp=sharing
-3) you can just fill the columns in the spreadsheet (you can copy already formatted column in range G2: M2 to your row and set your own conditions)
+3) you can just fill the columns in the spreadsheet (you can copy already formatted column in range G2:M2 to your row and set your own conditions)
 4) set written labels in the spreadsheet on those campaigns
 5) set column ENABLED on TRUE or you can disable the action of the script by setting column ENABLED in that row to FALSE
 
