@@ -20,7 +20,6 @@ function main() {
         var specialist = settings[j][0];
         var recipient = settings[j][1];
         var client = settings[j][2];
-        var emailSubject = "Display spend report";  
 //Account ID, Campaigns, Targets and campaign date
         var account_id = settings[j][3].trim();
         var label_name = settings[j][4];
