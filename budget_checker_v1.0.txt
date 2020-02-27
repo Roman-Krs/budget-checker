@@ -33,7 +33,7 @@ function main() {
         var pause_ratio = parseFloat(1) + parseFloat(settings[j][11]);
         var status = getBoolean(settings[j][12]); 
         //Logger.log(client + " - " + "iterration number: " + (j+1))
-
+        if(days == run_days)continue;
 //Adwords settings
         //Last row
         var row = 4;
