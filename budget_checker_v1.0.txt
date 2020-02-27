@@ -1,12 +1,12 @@
 //Url config spreadsheet-------------------------------------------------------------------------------------------------------------
 //***********************************************************************************************************************************
 // Warning: Check your timezone
-var ss_config = SpreadsheetApp.openByUrl('https://docs.google.com/spreadsheets/d/1kA_PMg5oHCeRIFaT3RXlNOo5q4ZmVcWr7AOy8sdsCj0/edit#gid=795040243');
+var ss_config = SpreadsheetApp.openByUrl('YOUR_SPREADSHEET_URL_HERE');
 /************************************************************************************************************************************
 Script:      Budget Checker v1.0
 Version:     25.02.2020
 Created By:  Roman Krs
-Idea:        Roman Krs feat. MarketUP.cz
+Idea:        MarketUP.cz
 /***********************************************************************************************************************************/
 
 function main() {
@@ -14,11 +14,6 @@ function main() {
 //Spreadsheet
     var settings_sheet = ss_config.getSheetByName("display_budget_control");
     var settings = settings_sheet.getRange("A4:M" + settings_sheet.getLastRow()).getValues();
-//yesterday date (for calculating target budget)
-    var MILLIS_PER_DAY = 1000 * 60 * 60 * 24;
-    var now = new Date();
-    var yesterday = new Date(now.getTime() - MILLIS_PER_DAY);
-    var date_yesterday = Utilities.formatDate(yesterday,"GMT+1", "yyyyMMdd")
 
     //count of accounts
     for (var j = 0; j < settings.length; j++){        
@@ -31,13 +26,14 @@ function main() {
         var label_name = settings[j][4];
         var target_spend = settings[j][5];
         var date_start = Utilities.formatDate(settings[j][6], "GMT+1", "yyyyMMdd");
+        var date_end = Utilities.formatDate(settings[j][7], "GMT+1", "yyyyMMdd");
         var days = settings[j][8];
         var run_days = settings[j][9];
 //Setting for cost report
         var notification_ratio = parseFloat(1) + parseFloat(settings[j][10]);
         var pause_ratio = parseFloat(1) + parseFloat(settings[j][11]);
         var status = getBoolean(settings[j][12]); 
-        //Logger.log(client + " - " + "iterration number: " + (j+1))
+        Logger.log(client + " - " + "iterration number: " + (j+1))
 
 //Adwords settings
         //Last row
@@ -62,7 +58,7 @@ function main() {
         while (campaignsIterator.hasNext()) {
           var campaign = campaignsIterator.next()
           
-          var stats_from_start = campaign.getStatsFor(date_start,date_yesterday).getCost();
+          var stats_from_start = campaign.getStatsFor(date_start,date_end).getCost();
           var stats_yesterday = campaign.getStatsFor("YESTERDAY").getCost();
           var stats_today = campaign.getStatsFor("TODAY").getCost();
           
@@ -70,11 +66,11 @@ function main() {
           cost_yesterday += stats_yesterday;
           cost_today += stats_today;          
         }            
-      
+ //       Logger.log(cost_from_start)
 
 //Calculate target costs that campaign can spend daily to end of campaign       
         var target_cost_today = (target_spend - cost_from_start) / (days - run_days) 
-
+        Logger.log(target_cost_today)
 //Conditions to do actions with campaigns
 
         // start of IF1 pause campaign for yesterday cost          
