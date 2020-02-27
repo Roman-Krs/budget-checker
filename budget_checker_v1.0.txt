@@ -65,11 +65,10 @@ function main() {
           cost_yesterday += stats_yesterday;
           cost_today += stats_today;          
         }            
-
-
-//Calculate target costs that campaign can spend daily to end of campaign       
-        var target_cost_today = (target_spend - cost_from_start) / (days - run_days) 
-        if(target_cost_today == "Infinity"){var target_cost_today = 0}
+        
+//Calculate target costs that campaign can spend daily to end of campaign   
+        var cost_from_start_to_yesterday = cost_from_start - cost_today
+        var target_cost_today = (target_spend - cost_from_start_to_yesterday) / (days - run_days) 
 //Conditions to do actions with campaigns
 
         // start of IF1 pause campaign for yesterday cost          
