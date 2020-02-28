@@ -34,18 +34,9 @@ function main() {
         var status = getBoolean(settings[j][12]); 
         //Logger.log(client + " - " + "iterration number: " + (j+1))
         if(days == run_days)continue;
-//Adwords settings
-        //Last row
-        var row = 4;
-        while (settings_sheet.getRange("D" + row).getValue() != "")
-        {
-            row += 1;
-        }
-        row -= 1;
 //Account select     
-        var adwords_settings = settings_sheet.getRange("D4:D" + row).getValues();
-        MccApp.select(MccApp.accounts().withIds([adwords_settings[j][0]]).get().next());
-        var account_name = AdWordsApp.currentAccount().getName();   
+        var adwords_settings = settings_sheet.getRange("D4:D" + settings_sheet.getLastRow()).getValues();
+        MccApp.select(MccApp.accounts().withIds([adwords_settings[j][0]]).get().next()); 
 //Campaign select
         var campaignsIterator = AdWordsApp.campaigns().withCondition("LabelNames CONTAINS_ANY ['" + label_name + "']").get();
 //Cost variables
@@ -54,22 +45,18 @@ function main() {
         var cost_today = 0  
 //Add real spends of campaigns    
         while (campaignsIterator.hasNext()) {
-          var campaign = campaignsIterator.next()
-          
+          var campaign = campaignsIterator.next()          
           var stats_from_start = campaign.getStatsFor(date_start,date_end).getCost();
           var stats_yesterday = campaign.getStatsFor("YESTERDAY").getCost();
-          var stats_today = campaign.getStatsFor("TODAY").getCost();
-          
+          var stats_today = campaign.getStatsFor("TODAY").getCost();          
           cost_from_start += stats_from_start;
           cost_yesterday += stats_yesterday;
           cost_today += stats_today;          
-        }            
-        
+        }          
 //Calculate target costs that campaign can spend daily to end of campaign   
         var cost_from_start_to_yesterday = cost_from_start - cost_today
         var target_cost_today = (target_spend - cost_from_start_to_yesterday) / (days - run_days) 
-        var target_cost_yesterday = (target_spend - (cost_from_start_to_yesterday - cost_yesterday)) / (days - (run_days - 1))        
-   
+        var target_cost_yesterday = (target_spend - (cost_from_start_to_yesterday - cost_yesterday)) / (days - (run_days - 1))           
 //Conditions to do actions with campaigns
         if(run_days != 0) {
             // start of IF1 pause campaign for yesterday cost          
@@ -89,10 +76,8 @@ function main() {
               } 
             } else {
             }
-            // end of IF1
-            
-        } 
-    
+            // end of IF1            
+        }     
       // start of IF2 pause campaign for today cost
       if (cost_today > (target_cost_today * pause_ratio)) {              
           var campaignSelector = AdsApp.campaigns()
