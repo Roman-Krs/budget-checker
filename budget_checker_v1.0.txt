@@ -1,7 +1,7 @@
 //Url config spreadsheet-------------------------------------------------------------------------------------------------------------
 //***********************************************************************************************************************************
 // Warning: Check your timezone
-var ss_config = SpreadsheetApp.openByUrl('YOUR_SPREADSHEET_URL_HERE');
+var ss_config = SpreadsheetApp.openByUrl('YOUR_SPREASHEET_URL_HERE');
 /************************************************************************************************************************************
 Script:      Budget Checker v1.0
 Version:     25.02.2020
@@ -67,12 +67,14 @@ function main() {
               //Pause Ads
               if (status == true){
                 pauseCampaigns(campaignSelector);
-                MailApp.sendEmail(recipient,recipient,'Overspending Notification: ' + client,'Your campaigns ' + label_name + ' are paused. They YESTERDAY overspend target costs. Instead ' + target_cost_yesterday + ' they spend ' + cost_yesterday + ' yesterday');
+                var condition = "YESTERDAY PAUSED CAMPAIGNS: "
+                sendMail(recipient,condition,cost_yesterday,target_cost_yesterday);                
               } 
             } else if (cost_yesterday > (target_cost_yesterday * notification_ratio)) {
               //Send Notification  
               if (status == true){
-                MailApp.sendEmail(recipient,recipient,'Overspending Notification: ' + client,'Your campaigns ' + label_name + ' YESTERDAY overspend target costs. Instead ' + target_cost_yesterday + ' they spend ' + cost_yesterday + ' yesterday');
+                var condition = "YESTERDAY NOTIFICATION: "
+                sendMail(recipient,condition,cost_yesterday,target_cost_yesterday);    
               } 
             } else {
             }
@@ -85,13 +87,15 @@ function main() {
           .get();
           //Pause Ads
           if (status == true){
-            MailApp.sendEmail(recipient,recipient,'Overspending Notification: ' + client,'Your campaigns ' + label_name + ' are paused. They TODAY overspend target costs. Instead ' + target_cost_today + ' they spend ' + cost_today + ' today');
             pauseCampaigns(campaignSelector);
+            var condition = "TODAY PAUSED CAMPAIGNS: "
+            sendMail(recipient,condition,cost_today,target_cost_today);    
           } 
         } else if (cost_today > (target_cost_today * notification_ratio)) {
             //Send Notification  
             if (status == true){
-              MailApp.sendEmail(recipient,recipient,'Overspending Notification: ' + client,'Your campaigns ' + label_name + ' TODAY overspend target costs. Instead ' + target_cost_today + ' they spend ' + cost_today + ' today');
+              var condition = "TODAY NOTIFICATION: "
+              sendMail(recipient,condition,cost_today,target_cost_today);    
             }
         } else {
         }
@@ -122,4 +126,12 @@ function getBoolean(value){
             return false;
    }
 }
+  
+function sendMail(recipient,condition,cost,target_cost){
+     var subject = 'Overspending Notification: ' + client
+     var message = condition + "Campaigns with label" + label_name + " OVERSPENDING: THEY SPEND " + parseInt(cost) + " INSTEAD: " + parseInt(target_cost)
+     MailApp.sendEmail(recipient, subject, message);    
+}   
+  
+  
 }
