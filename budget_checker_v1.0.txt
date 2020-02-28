@@ -42,7 +42,6 @@ function main() {
             row += 1;
         }
         row -= 1;
-      
 //Account select     
         var adwords_settings = settings_sheet.getRange("D4:D" + row).getValues();
         MccApp.select(MccApp.accounts().withIds([adwords_settings[j][0]]).get().next());
@@ -69,29 +68,33 @@ function main() {
 //Calculate target costs that campaign can spend daily to end of campaign   
         var cost_from_start_to_yesterday = cost_from_start - cost_today
         var target_cost_today = (target_spend - cost_from_start_to_yesterday) / (days - run_days) 
+        var target_cost_yesterday = (target_spend - (cost_from_start_to_yesterday - cost_yesterday)) / (days - (run_days - 1))        
+   
 //Conditions to do actions with campaigns
-
-        // start of IF1 pause campaign for yesterday cost          
-        if (cost_yesterday > (target_cost_today * pause_ratio)) {              
-          var campaignSelector = AdsApp.campaigns()
-          .withCondition("LabelNames CONTAINS_ANY ['" + label_name + "']")
-          .get();
-          //Pause Ads
-          if (status == true){
-            pauseCampaigns(campaignSelector);
-            MailApp.sendEmail(recipient,recipient,'Overspending Notification: ' + client,'Your campaigns ' + label_name + ' are paused. They YESTERDAY overspend target costs. Instead ' + target_cost_today + ' they spend ' + cost_yesterday + ' yesterday');
-          } 
-        } else if (cost_yesterday > (target_cost_today * notification_ratio)) {
-            //Send Notification  
-            if (status == true){
-              MailApp.sendEmail(recipient,recipient,'Overspending Notification: ' + client,'Your campaigns ' + label_name + ' YESTERDAY overspend target costs. Instead ' + target_cost_today + ' they spend ' + cost_yesterday + ' yesterday');
-            } 
-          } else {
-          }
-    // end of IF1
-      
-    // start of IF2 pause campaign for today cost          
-        if (cost_today > (target_cost_today * pause_ratio)) {              
+        if(run_days != 0) {
+            // start of IF1 pause campaign for yesterday cost          
+            if (cost_yesterday > (target_cost_yesterday * pause_ratio)) {              
+              var campaignSelector = AdsApp.campaigns()
+              .withCondition("LabelNames CONTAINS_ANY ['" + label_name + "']")
+              .get();
+              //Pause Ads
+              if (status == true){
+                pauseCampaigns(campaignSelector);
+                MailApp.sendEmail(recipient,recipient,'Overspending Notification: ' + client,'Your campaigns ' + label_name + ' are paused. They YESTERDAY overspend target costs. Instead ' + target_cost_yesterday + ' they spend ' + cost_yesterday + ' yesterday');
+              } 
+            } else if (cost_yesterday > (target_cost_yesterday * notification_ratio)) {
+              //Send Notification  
+              if (status == true){
+                MailApp.sendEmail(recipient,recipient,'Overspending Notification: ' + client,'Your campaigns ' + label_name + ' YESTERDAY overspend target costs. Instead ' + target_cost_yesterday + ' they spend ' + cost_yesterday + ' yesterday');
+              } 
+            } else {
+            }
+            // end of IF1
+            
+        } 
+    
+      // start of IF2 pause campaign for today cost
+      if (cost_today > (target_cost_today * pause_ratio)) {              
           var campaignSelector = AdsApp.campaigns()
           .withCondition("LabelNames CONTAINS_ANY ['" + label_name + "']")
           .get();
