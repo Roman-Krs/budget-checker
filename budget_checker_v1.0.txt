@@ -129,7 +129,7 @@ function getBoolean(value){
   
 function sendMail(recipient,condition,cost,target_cost){
      var subject = 'Overspending Notification: ' + client
-     var message = condition + "Campaigns with label" + label_name + " OVERSPENDING: THEY SPEND " + parseInt(cost) + " INSTEAD: " + parseInt(target_cost)
+     var message = condition + "Campaigns with label " + label_name + " OVERSPENDING: THEY SPEND " + parseInt(cost) + " INSTEAD: " + parseInt(target_cost)
      MailApp.sendEmail(recipient, subject, message);    
 }   
   
