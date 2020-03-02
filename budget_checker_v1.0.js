@@ -1,0 +1,138 @@
+//Url config spreadsheet-------------------------------------------------------------------------------------------------------------
+//***********************************************************************************************************************************
+// Warning: Check your timezone
+var ss_config = SpreadsheetApp.openByUrl('YOUR_SPREASHEET_URL_HERE');
+/************************************************************************************************************************************
+Script:      Budget Checker v1.0
+Version:     25.02.2020
+Created By:  Roman Krs
+Idea:        MarketUP.cz
+/***********************************************************************************************************************************/
+
+function main() {
+//Settings*************************************************************************************************************************** 
+//Spreadsheet
+    var settings_sheet = ss_config.getSheetByName("display_budget_control");
+    var settings = settings_sheet.getRange("A4:M" + settings_sheet.getLastRow()).getValues();
+    //count of accounts
+    for (var j = 0; j < settings.length; j++){        
+//Account user and client
+        var specialist = settings[j][0];
+        var recipient = settings[j][1];
+        var client = settings[j][2]; 
+//Account ID, Campaigns, Targets and campaign date
+        var account_id = settings[j][3].trim();
+        var label_name = settings[j][4];
+        var target_spend = settings[j][5];
+        var date_start = Utilities.formatDate(settings[j][6], "GMT+1", "yyyyMMdd");
+        var date_end = Utilities.formatDate(settings[j][7], "GMT+1", "yyyyMMdd");
+        var days = settings[j][8];
+        var run_days = settings[j][9];
+//Setting for cost report
+        var notification_ratio = parseFloat(1) + parseFloat(settings[j][10]);
+        var pause_ratio = parseFloat(1) + parseFloat(settings[j][11]);
+        var status = getBoolean(settings[j][12]); 
+        //Logger.log(client + " - " + "iterration number: " + (j+1))
+        if(days == run_days)continue;
+        if(days < run_days)continue;
+//Account select     
+        var adwords_settings = settings_sheet.getRange("D4:D" + settings_sheet.getLastRow()).getValues();
+        MccApp.select(MccApp.accounts().withIds([adwords_settings[j][0]]).get().next()); 
+//Campaign select
+        var campaignsIterator = AdWordsApp.campaigns().withCondition("LabelNames CONTAINS_ANY ['" + label_name + "']").get();
+//Cost variables
+        var cost_from_start = 0
+        var cost_yesterday = 0
+        var cost_today = 0  
+//Add real spends of campaigns    
+        while (campaignsIterator.hasNext()) {
+          var campaign = campaignsIterator.next()          
+          var stats_from_start = campaign.getStatsFor(date_start,date_end).getCost();
+          var stats_yesterday = campaign.getStatsFor("YESTERDAY").getCost();
+          var stats_today = campaign.getStatsFor("TODAY").getCost();          
+          cost_from_start += stats_from_start;
+          cost_yesterday += stats_yesterday;
+          cost_today += stats_today;          
+        }          
+//Calculate target costs that campaign can spend daily to end of campaign   
+        var cost_from_start_to_yesterday = cost_from_start - cost_today
+        var target_cost_today = (target_spend - cost_from_start_to_yesterday) / (days - run_days) 
+        var target_cost_yesterday = (target_spend - (cost_from_start_to_yesterday - cost_yesterday)) / (days - (run_days - 1))           
+//Conditions to do actions with campaigns
+        if(run_days != 0) {
+            // start of IF1 pause campaign for yesterday cost          
+            if (cost_yesterday > (target_cost_yesterday * pause_ratio)) {              
+              var campaignSelector = AdsApp.campaigns()
+              .withCondition("LabelNames CONTAINS_ANY ['" + label_name + "']")
+              .get();
+              //Pause Ads
+              if (status == true){
+                pauseCampaigns(campaignSelector);
+                var condition = "YESTERDAY PAUSED CAMPAIGNS: "
+                sendMail(recipient,condition,cost_yesterday,target_cost_yesterday);                
+              } 
+            } else if (cost_yesterday > (target_cost_yesterday * notification_ratio)) {
+              //Send Notification  
+              if (status == true){
+                var condition = "YESTERDAY NOTIFICATION: "
+                sendMail(recipient,condition,cost_yesterday,target_cost_yesterday);    
+              } 
+            } else {
+            }
+            // end of IF1            
+        }     
+      // start of IF2 pause campaign for today cost
+      if (cost_today > (target_cost_today * pause_ratio)) {              
+          var campaignSelector = AdsApp.campaigns()
+          .withCondition("LabelNames CONTAINS_ANY ['" + label_name + "']")
+          .get();
+          //Pause Ads
+          if (status == true){
+            pauseCampaigns(campaignSelector);
+            var condition = "TODAY PAUSED CAMPAIGNS: "
+            sendMail(recipient,condition,cost_today,target_cost_today);    
+          } 
+        } else if (cost_today > (target_cost_today * notification_ratio)) {
+            //Send Notification  
+            if (status == true){
+              var condition = "TODAY NOTIFICATION: "
+              sendMail(recipient,condition,cost_today,target_cost_today);    
+            }
+        } else {
+        }
+      // end of IF2
+    }
+  
+//Function to pause campaigns
+function pauseCampaigns(selector) {
+ 
+    while(selector.hasNext()) {
+        var campaign = selector.next();
+        campaign.pause();
+    } 
+}   
+  
+//Function to change String to Boolean (used for values from spreadsheet)
+function getBoolean(value){
+   switch(value){
+        case true:
+        case "true":
+        case "TRUE":
+        case 1:
+        case "1":
+        case "on":
+        case "yes":
+            return true;
+        default: 
+            return false;
+   }
+}
+  
+function sendMail(recipient,condition,cost,target_cost){
+     var subject = 'Overspending Notification: ' + client
+     var message = condition + "Campaigns with label" + label_name + " OVERSPENDING: THEY SPEND " + parseInt(cost) + " INSTEAD: " + parseInt(target_cost)
+     MailApp.sendEmail(recipient, subject, message);    
+}   
+  
+  
+}
