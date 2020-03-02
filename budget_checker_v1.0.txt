@@ -33,7 +33,7 @@ function main() {
         var pause_ratio = parseFloat(1) + parseFloat(settings[j][11]);
         var status = getBoolean(settings[j][12]); 
         //Logger.log(client + " - " + "iterration number: " + (j+1))
-        if(days == run_days || days < run_days)continue;
+        if(days == run_days || days < run_days){continue;}
 //Account select     
         var adwords_settings = settings_sheet.getRange("D4:D" + settings_sheet.getLastRow()).getValues();
         MccApp.select(MccApp.accounts().withIds([adwords_settings[j][0]]).get().next()); 
