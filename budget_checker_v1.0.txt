@@ -5,7 +5,7 @@ var ss_config = SpreadsheetApp.openByUrl('YOUR_SPREADSHEET_URL_HERE');
 /************************************************************************************************************************************
 Script:      Budget Checker v1.0
 Version:     25.02.2020
-Created By:  Roman Krs
+Created By:  Roman Krs - ruman202@gmail.com / twitter @krs_roman
 Idea:        MarketUP.cz
 /***********************************************************************************************************************************/
 
