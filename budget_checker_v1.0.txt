@@ -12,7 +12,7 @@ Idea:        MarketUP.cz
 function main() {
 //Settings*************************************************************************************************************************** 
 //Spreadsheet
-    var settings_sheet = ss_config.getSheetByName("display_budget_control");
+    var settings_sheet = ss_config.getSheetByName("display_budget_checker");
     var settings = settings_sheet.getRange("A4:M" + settings_sheet.getLastRow()).getValues();
     //count of accounts
     for (var j = 0; j < settings.length; j++){        
