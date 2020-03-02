@@ -15,4 +15,4 @@ It is easy to implement.
 4) set written labels in the spreadsheet on those campaigns
 5) set column ENABLED on TRUE or you can disable the action of the script by setting column ENABLED in that row to FALSE
 
-Column Client + campaign will be the email title. For every campaign, you will get separated messages in your mailbox. If script spamming you with notification, just change status to false or set higher ratio.
+Column Client + campaign will be the email title. For every campaign, you will get separated messages in your mailbox. If script spamming you with notifications, just change status to false or set higher ratio.
