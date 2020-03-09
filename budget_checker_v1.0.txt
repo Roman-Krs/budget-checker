@@ -31,7 +31,8 @@ function main() {
 //Setting for cost report
         var notification_ratio = parseFloat(1) + parseFloat(settings[j][10]);
         var pause_ratio = parseFloat(1) + parseFloat(settings[j][11]);
-        var status = getBoolean(settings[j][12]); 
+        var status_today = getBoolean(settings[j][12]); 
+        var status_yesterday = getBoolean(settings[j][13]); 
         //Logger.log(client + " - " + "iterration number: " + (j+1))
         if(days == run_days || days < run_days){continue;}
 //Account select     
@@ -56,7 +57,7 @@ function main() {
 //Calculate target costs that campaign can spend daily to end of campaign   
         var cost_from_start_to_yesterday = cost_from_start - cost_today
         var target_cost_today = (target_spend - cost_from_start_to_yesterday) / (days - run_days) 
-        var target_cost_yesterday = (target_spend - (cost_from_start_to_yesterday - cost_yesterday)) / (days - (run_days - 1))           
+        var target_cost_yesterday = (target_spend - (cost_from_start_to_yesterday - cost_yesterday)) / (days - (run_days - 1))  
 //Conditions to do actions with campaigns
         if(run_days != 0) {
             // start of IF1 pause campaign for yesterday cost          
@@ -65,14 +66,14 @@ function main() {
               .withCondition("LabelNames CONTAINS_ANY ['" + label_name + "']")
               .get();
               //Pause Ads
-              if (status == true){
+              if (status_yesterday == true){
                 pauseCampaigns(campaignSelector);
                 var condition = "YESTERDAY PAUSED CAMPAIGNS: "
                 sendMail(recipient,condition,cost_yesterday,target_cost_yesterday);                
               } 
             } else if (cost_yesterday > (target_cost_yesterday * notification_ratio)) {
               //Send Notification  
-              if (status == true){
+              if (status_yesterday == true){
                 var condition = "YESTERDAY NOTIFICATION: "
                 sendMail(recipient,condition,cost_yesterday,target_cost_yesterday);    
               } 
@@ -86,14 +87,14 @@ function main() {
           .withCondition("LabelNames CONTAINS_ANY ['" + label_name + "']")
           .get();
           //Pause Ads
-          if (status == true){
+          if (status_today == true){
             pauseCampaigns(campaignSelector);
             var condition = "TODAY PAUSED CAMPAIGNS: "
             sendMail(recipient,condition,cost_today,target_cost_today);    
           } 
         } else if (cost_today > (target_cost_today * notification_ratio)) {
             //Send Notification  
-            if (status == true){
+            if (status_today == true){
               var condition = "TODAY NOTIFICATION: "
               sendMail(recipient,condition,cost_today,target_cost_today);    
             }
